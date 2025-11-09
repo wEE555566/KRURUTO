@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wee webapp</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Itim&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>wee webapp</h1>
+  <div class="container">
+    <nav>
+      <div class="logo">
+        <img src="https://abdul.in.th/messaging-engine/media/images/9e5eb9e21d83e8240f5041220f772296/558708780255936906.png" alt="logo">
+      </div>
+    </nav>
+    <hr>
+    <section class="buttons">
+      
+      <button id="reportproblem" onclick="showInput('problem')">แจ้งปัญหา</button>
+      <button id="reportsuggestion" onclick="showInput('suggestion')">ข้อเสนอแนะ</button>
+    </section>
+    
+    <form id="feedback">
+      <input type="text" name="problem" id="inputproblem" placeholder="แจ้งปัญหาที่พบ..." style="display:none;">
+      <input type="text" name="suggestion" id="inputsuggestion" placeholder="ข้อเสนอแนะเพิ่มเติม..." style="display:none;">
+      <button type="submit" id="send">บันทึก</button>
+    </form>
+    
+  </div>
+  <script src="script.js"></script>
+  
+</body>
+</html>

@@ -1,0 +1,14 @@
+deploy-dev:
+ stage: dev
+ script:
+   - docker volume create --opt type=none --opt o=bind --opt device=/storage/docker/services/data-storage/redis/wee wee-redis
+   - docker-compose up -d --force-recreate --remove-orphans
+   - docker image  prune --force
+
+destroy-dev:
+  stage: dev
+  script:
+   - docker-compose down
+  
+  when: manual
+  allow_failure: true

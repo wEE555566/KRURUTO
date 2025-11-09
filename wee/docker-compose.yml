@@ -1,0 +1,64 @@
+version: '3.0'
+services:
+  swt-intern-wee-engine:
+    build:
+      context: .
+      dockerfile: build/Dockerfile.engine
+    image: swt/intern/wee/engine
+    stdin_open: true
+    tty: true
+    # ports:
+    #   - 32101:8501
+
+  swt-intern-wee-webapp:
+    build:
+      context: .
+      dockerfile: build/Dockerfile.webapp
+    image: swt/intern/wee/webapp
+    ports:
+      - 32101:80
+    depends_on:
+      - swt-intern-wee-engine
+    stdin_open: true
+    tty: true
+  swt-intern-wee-webapp2:
+    build:
+      context: .
+      dockerfile: build/Dockerfile.webapp
+    image: swt/intern/wee/webapp2
+    ports:
+      - 32102:81
+    depends_on:
+      - swt-intern-wee-engine
+    stdin_open: true
+    tty: true
+
+
+
+
+
+
+  wee-redis:
+    image: redis:alpine
+    restart: always
+    command: redis-server --appendonly yes
+    container_name: "wee-redis"
+    deploy:
+      resources:
+        limits:
+          memory: 100M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "10"
+    volumes:
+      - "/storage/docker/services/data-storage/redis/wee:/data"
+    environment:
+      - TZ=Asia/Bangkok
+
+
+
+
+
+

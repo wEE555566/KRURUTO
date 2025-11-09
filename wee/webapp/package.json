@@ -1,0 +1,7 @@
+{
+  "name": "wee-webapp",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'dummy build (replace with real build script)'"
+  }
+}

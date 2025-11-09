@@ -1,0 +1,10 @@
+fastapi
+httpx
+streamlit
+git+https://github.com/hunkim/streamlit-google-oauth
+requests 
+uvicorn[standard] 
+redis
+jwt
+pillow 
+pytesseract 

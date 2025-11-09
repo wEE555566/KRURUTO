@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>การตรวจจับการกินยา</title>
+  <style>
+    body {
+      font-family: 'Kanit', sans-serif;
+      background: #f9fbfc;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    h1 {
+      color: #3b82f6;
+      margin-bottom: 20px;
+    }
+
+    video {
+      border-radius: 12px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      max-width: 100%;
+      width: 400px;
+    }
+  
+    
+    .progress-container {
+      width: 400px;
+      margin-top: 20px;
+      background: #eee;
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      height: 24px;
+      line-height: 24px;
+      color: #fff;
+      text-align: center;
+      font-weight: bold;
+      transition: width 0.3s ease;
+    }
+
+    .controls {
+      margin-top: 15px;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      background: #3b82f6;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+      margin: 0 5px;
+      font-family: 'Kanit', sans-serif;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    .canvas-hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>การตรวจจับการกินยา</h1>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas" class="canvas-hidden"></canvas>
+
+  <div class="controls">
+    <button id="startBtn">เริ่มตรวจจับ</button>
+    <button id="stopBtn">หยุด</button>
+  </div>
+
+  <div class="progress-container">
+    <div id="progressBar" class="progress-bar" style="width: 0%">0%</div>
+  </div>
+
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    const progressBar = document.getElementById('progressBar');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    let stream;
+    let intervalId;
+    let results = [];
+
+    async function startCamera() {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+    }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+        video.srcObject = null;
+      }
+      clearInterval(intervalId);
+    }
+
+    function updateProgress(average) {
+      progressBar.style.width = `${average}%`;
+      progressBar.textContent = `${average}%`;
+
+      if (average < 30) {
+        progressBar.style.background = '#ef476f'; // แดง
+      } else if (average < 70) {
+        progressBar.style.background = '#ffd166'; // เหลือง
+      } else {
+        progressBar.style.background = '#06d6a0'; // เขียว
+      }
+    }
+
+    async function captureAndAnalyze() {
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg'));
+      const formData = new FormData();
+      formData.append('file', blob, 'frame.jpg');
+
+      try {
+        const res = await fetch('http://localhost:8000/detect_medication', {
+          method: 'POST',
+          body: formData
+        });
+        const data = await res.json();
+        const percent = data.percentage || 0;
+
+        results.push(percent);
+        const avg = Math.floor(results.reduce((a, b) => a + b, 0) / results.length);
+        updateProgress(avg);
+      } catch (err) {
+        console.error('Error analyzing image:', err);
+      }
+    }
+
+    startBtn.addEventListener('click', async () => {
+      results = [];
+      await startCamera();
+      intervalId = setInterval(captureAndAnalyze, 3000);
+    });
+
+    stopBtn.addEventListener('click', () => {
+      stopCamera();
+    });
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500&display=swap" rel="stylesheet">
+</body>
+</html>

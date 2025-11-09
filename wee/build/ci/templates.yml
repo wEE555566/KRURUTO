@@ -1,0 +1,13 @@
+.replace_secrets: &replace_secrets
+  - gcloud version
+  - SA_RIBOT_BQ_CONNECT=$(gcloud secrets versions access latest --secret=${SA_RIBOT_BQ_CONNECT_SECRET} --project=${GCP_PROJECT_ID_APP})
+  - echo SA_RIBOT_BQ_CONNECT
+  - 'sed -i -e "s|{sa-ribot-bq-connect-content}|$SA_RIBOT_BQ_CONNECT|g" ./deployments/kubernetes/helm/$VALUES.yaml'
+  - SERVER_CA_POSTGRESQL=$(gcloud secrets versions access latest --secret=${SERVER_CA_POSTGRESQL_SECRET} --project=${GCP_PROJECT_ID_APP})
+  - 'sed -i -e "s|{server-ca-postgresql-content}|$SERVER_CA_POSTGRESQL|g" ./deployments/kubernetes/helm/$VALUES.yaml'
+  - CLIENT_CERT_POSTGRESQL=$(gcloud secrets versions access latest --secret=${CLIENT_CERT_POSTGRESQL_SECRET} --project=${GCP_PROJECT_ID_APP})
+  - 'sed -i -e "s|{client-cert-postgresql-content}|$CLIENT_CERT_POSTGRESQL|g" ./deployments/kubernetes/helm/$VALUES.yaml'
+  - CLIENT_KEY_POSTGRESQL=$(gcloud secrets versions access latest --secret=${CLIENT_KEY_POSTGRESQL_SECRET} --project=${GCP_PROJECT_ID_APP})
+  - 'sed -i -e "s|{client-key-postgresql-content}|$CLIENT_KEY_POSTGRESQL|g" ./deployments/kubernetes/helm/$VALUES.yaml'
+  - DB_CONNECTION_STRING=$(gcloud secrets versions access latest --secret=${DB_CONNECTION_STRING_SECRET} --project=${GCP_PROJECT_ID_APP})
+  - 'sed -i -e "s|{db-connection-string}|$DB_CONNECTION_STRING|g" ./deployments/kubernetes/helm/$VALUES.yaml'
